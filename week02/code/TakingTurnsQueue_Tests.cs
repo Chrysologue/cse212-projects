@@ -12,6 +12,11 @@ public class TakingTurnsQueueTests
     // run until the queue is empty
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
     // Defect(s) Found: 
+
+    // FAILED:
+    // Expected Bob to be returned after Sue's first turn.
+    // The queue implementation inserted people at the front
+    // instead of the back, violating FIFO queue behavior.
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
