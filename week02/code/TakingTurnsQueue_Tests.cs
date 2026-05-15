@@ -14,9 +14,10 @@ public class TakingTurnsQueueTests
     // Defect(s) Found: 
 
     // FAILED:
-    // Expected Bob to be returned after Sue's first turn.
-    // The queue implementation inserted people at the front
-    // instead of the back, violating FIFO queue behavior.
+    // The queue returned items in the wrong order.
+    // Instead of following FIFO rotation correctly, the first returned item
+    // was incorrect (expected Bob but got Sue), meaning that the queue
+    // order was not maintained properly when cycling through turns.
     public void TestTakingTurnsQueue_FiniteRepetition()
     {
         var bob = new Person("Bob", 2);
@@ -49,6 +50,12 @@ public class TakingTurnsQueueTests
     // After running 5 times, add George with 3 turns.  Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, George, Sue, Tim, George, Tim, George
     // Defect(s) Found: 
+
+
+    // FAILED:
+    // Wrong order was returned because items with 1 remaining turn
+    // were removed too early instead of being re-enqueued until 0.
+    // This broke FIFO rotation before George was added.
     public void TestTakingTurnsQueue_AddPlayerMidway()
     {
         var bob = new Person("Bob", 2);
@@ -91,6 +98,13 @@ public class TakingTurnsQueueTests
     // Run 10 times.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
     // Defect(s) Found: 
+
+
+    // FAILED:
+    // The queue returned items in the wrong order at the start of execution.
+    // The implementation did not correctly maintain FIFO order when handling
+    // infinite turn users (Turns <= 0), causing earlier users (e.g., Bob)
+    // to be skipped or delayed in rotation.
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
@@ -122,6 +136,12 @@ public class TakingTurnsQueueTests
     // Run 10 times.
     // Expected Result: Tim, Sue, Tim, Sue, Tim, Sue, Tim, Tim, Tim, Tim
     // Defect(s) Found: 
+
+
+    // FAILED:
+    // The queue did not treat negative turn values as infinite correctly.
+    // Users with negative turns were not consistently re-enqueued,
+    // causing the rotation order to break and returning Sue instead of Tim.
     public void TestTakingTurnsQueue_ForeverNegative()
     {
         var timTurns = -3;
@@ -149,6 +169,10 @@ public class TakingTurnsQueueTests
     // Scenario: Try to get the next person from an empty queue
     // Expected Result: Exception should be thrown with appropriate error message.
     // Defect(s) Found: 
+
+    // FAILED:
+    // No defects found. The queue correctly throws an InvalidOperationException
+    // with the message "No one in the queue." when attempting to dequeue from an empty queue.
     public void TestTakingTurnsQueue_Empty()
     {
         var players = new TakingTurnsQueue();
